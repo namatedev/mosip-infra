@@ -26,14 +26,17 @@
       - debug:
           msg: "{{ private_ip }}"
 
-      - name: Run Keycloak
-        docker_container:
-          name: keycloak
-          image: mosipid/keycloak:1.0.6
-          state: started
-          ports:
-            - "8444:8080"
-          pull: yes
-          etc_hosts: 
-            sandbox.com: "{{ private_ip.stdout }}"
+      # - name: Run Keycloak
+      #  docker_container:
+      #    name: keycloak
+      #    image: mosipid/keycloak:1.0.6
+      #    state: started
+      #    ports:
+      #      - "8444:8080"
+      #    pull: yes
+      #    etc_hosts: 
+      #      sandbox.com: "{{ private_ip.stdout }}"
 #docker run --add-host sandbox.com:172.16.17.4 -p 8444:8080 --name keycloak  -e KEYCLOAK_USER=mosip -e KEYCLOAK_PASSWORD=mosip -e DB_VENDOR=h2  -e DB_USER=postgres -e DB_PASSWORD=postgres -e DB_ADDR=172.16.17.4 -e DB_PORT=9001 -e DB_DATABASE=keycloak  jboss/keycloak
+
+      - name: Run Keycloak
+        shell: docker run -d --add-host sandbox.com:"{{ private_ip.stdout }}" -p 8444:8080 --name keycloak  -e KEYCLOAK_USER=mosip -e KEYCLOAK_PASSWORD=mosip -e DB_VENDOR=postgres  -e DB_USER=postgres -e DB_PASSWORD=postgres -e DB_ADDR="{{ private_ip.stdout }}" -e DB_PORT=9001 -e DB_DATABASE=keycloak  jboss/keycloak

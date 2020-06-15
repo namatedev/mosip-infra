@@ -79,9 +79,9 @@ def add_user_in_ldap(user_info, ld):
         user_info:  UserInfo structure in common.py 
     '''
     u = user_info
-    dn = 'uid=%s,ou=people,c=mycountry' % u.uid 
+    dn = 'uid=%s,ou=people,c=%s' % (u.uid, u.country)
     attrs = {}
-    attrs['objectClass'] = [b'userDetails']
+    attrs['objectClass'] = [b'userDetails', b'top', b'person', b'organizationalPerson', b'inetOrgPerson']
     attrs['cn'] = [u.user_name.encode()]
     attrs['sn'] = [u.user_name.encode()]
     attrs['userPassword'] = [u.user_password.encode()]
@@ -91,20 +91,29 @@ def add_user_in_ldap(user_info, ld):
     ldif = modlist.addModlist(attrs)
     ld.add_s(dn, ldif)
 
-def add_user_to_role(uid, role, ld):
+def add_role_in_ldap(role, country, ld):
+    dn = 'cn=%s,ou=roles,c=%s' % (role, country)
+    attrs = {}
+    attrs['objectClass'] = [b'top', b'organizationalRole']
+    attrs['cn'] = [role.encode()]
+    
+    ldif = modlist.addModlist(attrs)
+    ld.add_s(dn, ldif)
+
+def add_user_to_role(uid, role, ld, country):
     '''
     Args:
         uid: As in LDAP
         role: str
         ld: LDAP connection
     '''
-    dn = 'cn=%s,ou=roles,c=mycountry' % role
+    dn = 'cn=%s,ou=roles,c=%s' % (role, country)
     attrs = {}
     attrs['changetype'] = [b'modify']
     attrs['add'] = [b'roleOccupant']
-    s = 'uid=%s,ou=people,c=mycountry' % uid
+    s = 'uid=%s,ou=people,c=%s' % (uid, country)
     attrs['roleOccupant'] = [s.encode()]
-    s = 'uid=%s,ou=people,c=mycountry' % uid
+    s = 'uid=%s,ou=people,c=%s' % (uid, country)
     t = [(ldap.MOD_ADD, 'roleOccupant', s.encode())]
 
     ld.modify_s(dn, t) 

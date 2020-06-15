@@ -47,7 +47,7 @@ spec:
       volumes:
       - name: redis-storage
         hostPath:
-          path: "<hostPath>/config-properties"
+          path: "/home/dev_tech/mosip-infra/deployment/sandbox/config-properties"
           # path: /home/madmin/Desktop/ansible/mosip-config-mt/config
 ---
 apiVersion: v1

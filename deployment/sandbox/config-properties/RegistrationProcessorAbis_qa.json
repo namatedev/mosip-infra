@@ -3,7 +3,7 @@
 		"name": "ABIS1",
 		"host": "",
 		"port": "",
-		"brokerUrl": "tcp://<your_private_ip>:61616",
+		"brokerUrl": "tcp://10.128.0.10:61616",
 		"inboundQueueName": "mosip-to-tech5",
 		"outboundQueueName": "tech5-to-mosip",
 		"pingInboundQueueName": "",

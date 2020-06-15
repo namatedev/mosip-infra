@@ -22,6 +22,7 @@ class UserInfo:
         self.role = None  # Roles as in LDAP
         self.zone_code = None
         self.lang_code = None
+        self.country = None
 
 def command(cmd):
     r = subprocess.run(cmd, shell=True)
@@ -158,5 +159,6 @@ def parse_umc_csv(csv_file):
         u.role = row[8] # Currently only one role is assumed. TODO.
         u.zone_code = 'PHIL' # Default, so hardcoded 
         u.lang_code = 'eng' # Default, so hardcoded
+        u.country = 'morocco'
         user_infos.append(u)
     return user_infos

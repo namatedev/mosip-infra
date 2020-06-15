@@ -16,7 +16,7 @@ import argparse
 sys.path.insert(0, '../')
 from common import *
 from logger import init_logger
-from ldap_utils import add_user_in_ldap, add_user_to_role
+from ldap_utils import add_user_in_ldap, add_user_to_role, add_role_in_ldap
 from db import add_umc
 
 logger = logging.getLogger() # Root Logger 
@@ -44,7 +44,7 @@ def main():
     init_logger(logger, 'logs/add_user.log', 10000000, 'info', 1)
 
     uinfo = parse_umc_csv(args.csv)
-    conn = psycopg2.connect("dbname=mosip_master user=postgres")
+    conn = psycopg2.connect("dbname=mosip_master user=postgres port=9001 password=postgres")
     conn.autocommit = True
     cur = conn.cursor() 
 
@@ -57,11 +57,15 @@ def main():
 
         if update_ldap:
             try:
+                add_role_in_ldap(u.role, u.country, ld)
+            except ldap.ALREADY_EXISTS: 
+                logger.info('Role already exists in LDAP: %s' % (u.role))
+            try:
                 add_user_in_ldap(u, ld)
             except ldap.ALREADY_EXISTS: 
                 logger.info('User already exists in LDAP: %s' % (u.uid))
             try:
-                add_user_to_role(u.uid, u.role, ld)
+                add_user_to_role(u.uid, u.role, ld, u.country)
             except ldap.TYPE_OR_VALUE_EXISTS:
                 logger.info('User-Role already in LDAP: %s-%s' % (u.uid, u.role))
 
